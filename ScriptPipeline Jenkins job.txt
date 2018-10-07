@@ -157,6 +157,9 @@ node {
     }
 
     stage('Deploy') {
+	    //Podemos detener la ejecución para que el operador actue manualmente
+		input 'Ready to go?'
+	
         echo "Depliega"
         retry(3) {
             echo 'si falla lo reintenta hasta 3 veces'
