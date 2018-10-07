@@ -11,6 +11,6 @@ class Utilities implements Serializable {
 	
 	def mvn(args) {
 		def toolMVN=steps.tool "${nombreMVN}";
-		steps.bat "${toolMVN}\\bin\\mvn -o ${args}"
+		steps.bat "\"${toolMVN}\\bin\\mvn\" -o ${args}"
 	}
 }
