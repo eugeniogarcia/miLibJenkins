@@ -9,8 +9,15 @@ class Utilities implements Serializable {
 		this.nombreMVN = nombre;
 	}
 	
-	def mvn(args) {
+	public boolean mvn(args) {
 		def toolMVN=steps.tool "${nombreMVN}";
-		steps.bat "\"${toolMVN}\\bin\\mvn\" -o ${args}"
+		try{
+			steps.bat "\"${toolMVN}\\bin\\mvn\" -o ${args}"
+		}
+		catch (Exception ex){
+			echo ex
+			return false
+		}
+		return true
 	}
 }
