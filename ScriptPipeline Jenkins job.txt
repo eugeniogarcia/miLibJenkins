@@ -1,0 +1,170 @@
+/*
+The annotation can be anywhere in the script where an annotation is permitted by Groovy. 
+When referring to class libraries (with src/ directories), conventionally the annotation 
+goes on an import statement:
+
+@Library('utilidades') _
+import org.euge.Utilities
+
+
+If you are only interested in using global variables/functions (from the vars/ directory), 
+the syntax is quite simple:
+
+library 'utilidades'
+
+O por ejemplo, indicando la version:
+library 'utilidades@master'
+
+Thereafter, any global variables from that library will be accessible to the script
+*/
+
+//Referencia a la libreria. Se cargaran las propiedades globales
+//@Library('utilidades') _
+
+//Importa 
+@Library('utilidades') _
+import org.euge.*
+
+node {
+    stage('Variables') {
+        echo "Variables"
+
+        //Demuestra diferencia entre comillas simples y dobles. Con las dobles 
+        //se resuelven variables
+        def singlyQuoted = 'Hello'
+        def doublyQuoted = "World"
+        def username = 'Jenkins'
+        echo 'Hello Mr. ${username}'
+        echo "I said, Hello Mr. ${username}"
+        
+        //Usa variables de entorno (ver sintaxis, globals, ejemplos de variables)
+        echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
+
+        //Podemos definir el contexto de validez de una variable
+        //esto es util cuando se usan varios agentes de forma concurrente
+        withEnv(["PATH+MAVEN=${tool 'miMaven'}/bin"]) {
+            bat 'mvn --version'
+            try {
+                bat 'mvn clean'
+            }
+            catch(Exception ex) {
+                echo "Se gestiono el error ${ex}"
+            }
+            finally {
+                echo "Concluye"
+            }
+        }
+
+    }
+    
+    stage('Parametros') {
+        echo "Parametros"
+        
+        echo "${params.Greeting}, how are you?"
+        
+        //Podemos utilizar parametros (job con parametros)
+        echo "isFoo is ${params.isFoo}"
+        if (params.isFoo) {
+            echo "isFoo es true"
+        }
+    }
+    
+    stage('Compila'){
+        echo "Compila"
+        //Hace un checkout desde git
+        //Sintaxis equivalentes
+        //Esto es un pipeline step. Todos los steps esperan argumentos
+        //git url: 'https://github.com/eugeniogarcia/pruebaCICD.git'
+        //git([url: 'https://github.com/eugeniogarcia/pruebaCICD.git'])
+        //Opcionalmente podemos especificar el branch
+        git([url: 'https://github.com/eugeniogarcia/pruebaCICD.git', branch: 'master'])
+        
+        //Define una variable con una tool. La tool que hemos creado con el nombre miMaven
+        def mvnHome = tool 'miMaven'
+        echo "Primera verificacion"
+        bat "\"${mvnHome}\\bin\\mvn\" clean"
+        //Si el step solo tiene un argumento, no hace falta que especifquemos su nombre. 
+        //El comando anterior es equivalente a:
+        //bat script: "\"${mvnHome}\\bin\\mvn\" clean"
+        
+        //Vamos a demostrar ahora como actualizar una variable de entorno, PATH
+        def mvnHome1 = tool 'miMaven'
+        //aqui actualizamos el PATH. este cambio sera valido para este agente
+        env.PATH = "\"${mvnHome1}\\bin\";${env.PATH}"
+        //Configuramos Maven para que en caso de que los test no sean OK, no lance un error
+        //y asi el job continue
+        bat "mvn -B -Dmaven.test.failure.ignore verify"
+
+    }
+
+    //Demuestra como procesar cosas en paralelo
+    //Cada una de las ejecuciones lleva una etiqueta. Aqui he puesto usa_stash y testea
+    stage('Paralelo'){
+        parallel usa_stash:{
+            //Podemos usar el stash para traspasar archivos de un nodo a otro
+            //Aqui solo uso un nodo, pero funcionaria con dos
+            stage('Origen'){
+                echo "Origen"
+                
+                node('master'){
+                    //Crea un archivo con la salida de dir
+                    bat "dir >> Test.txt"
+                    //Guarda el archivo en el stash con el nombre archivo
+                    stash includes: 'Test.txt', name:'archivo'
+                }
+            }
+            stage('Destino'){
+                echo "Destino"
+                
+                node('master'){
+                    //Recupera el archivo desde el stash con el nombre archivo
+                    unstash name:'archivo'
+                    bat "type Test.txt"
+                }
+            }
+        },
+        testea:{
+            node('master'){
+                log.info 'Empezando'
+                log.warning 'Nada que hacer!'
+                saluda 'Nico'
+                parInpar(currentBuild.getNumber())
+            
+                
+            }
+        }
+        
+    }
+    
+    stage('Usa Libreria'){
+        echo "Usa la libreria"
+        
+        def z = new org.euge.Zot()
+        z.checkOutFrom("prueba_apiary.git")
+
+        def utils = new Utilities(this, "miMaven");
+    	if(utils.mvn('clean')){
+    	    echo 'funciono'
+    	}
+    	else{
+    	    echo 'no funciono'
+    	}
+
+        def A=new Vector(1,2,3);
+        echo A.modulo().toString();
+        Operaciones op=new Operaciones();
+        echo op.suma(A,A).modulo().toString();
+    }
+
+    stage('Deploy') {
+        echo "Depliega"
+        retry(3) {
+            echo 'si falla lo reintenta hasta 3 veces'
+        }
+
+        timeout(time: 3, unit: 'MINUTES') {
+            echo 'Fija un timeout de 3 minutos'
+        }
+
+    }
+}
