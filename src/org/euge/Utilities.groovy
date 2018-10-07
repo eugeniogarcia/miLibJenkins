@@ -15,7 +15,9 @@ class Utilities implements Serializable {
 			steps.bat "\"${toolMVN}\\bin\\mvn\" -o ${args}"
 		}
 		catch (Exception ex){
-			echo ex
+			echo ex.toString()
+			echo ex.getMessage()
+			echo ex.getStackTrace()
 			return false
 		}
 		return true
