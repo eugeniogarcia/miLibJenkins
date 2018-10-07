@@ -1,4 +1,2 @@
-/*
 @Library('utilidades') 
 parInpar(currentBuild.getNumber())
-*/

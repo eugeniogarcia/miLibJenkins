@@ -1,6 +1,5 @@
 package org.euge;
 
-// point in 3D space
 class Vector {
 	public float x,y,z;
 	

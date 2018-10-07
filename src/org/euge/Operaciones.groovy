@@ -1,7 +1,6 @@
 package org.euge;
 import org.euge.Point;
 
-// point in 3D space
 class Operaciones {
 	private Vector ref;
 	

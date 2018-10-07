@@ -1,0 +1,8 @@
+Utilidades es el nombre que le hemos dado a la libreria en la configuracion global de jenkins. Podemos ejecutarlo en un pipeline asi:
+
+@Library('utilidades') import org.euge.Utilities
+def utils = new Utilities(this, "miMaven");
+
+node {
+	utils.mvn 'clean package'
+}
