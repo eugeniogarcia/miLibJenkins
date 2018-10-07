@@ -1,17 +1,17 @@
 package org.euge;
-import org.euge.Point;
+import org.euge.Vector;
 
 class Operaciones {
 	
-	public Vector resta(Point A, Point B){
+	public Vector resta(Vector A, Vector B){
 		return new Vector(A.x-B.x,A.y-B.y,A.z-B.z);
 	}
 
-	public Vector suma(Point A, Point B){
+	public Vector suma(Vector A, Vector B){
 		return new Vector(A.x+B.x,A.y+B.y,A.z+B.z);
 	}	
 	
-	public Vector multiplica(float c, Point A){
+	public Vector multiplica(float c, Vector A){
 		return new Vector(A.x*c,A.y*c,A.z*c);
 	}	
 	
