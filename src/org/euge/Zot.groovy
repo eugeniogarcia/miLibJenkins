@@ -1,6 +1,6 @@
 package org.euge;
 
-//
+//Se puede llamar desde un pipeline asi:
 //def z = new org.euge.Zot()
 //z.checkOutFrom("pruebaCICD.git")
 

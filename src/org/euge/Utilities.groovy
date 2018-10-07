@@ -1,8 +1,9 @@
 package org.euge;
 
 
-/* Podemos ejecutarlo en un pipeline asi
-@Library('utils') import org.euge.Utilities
+/* Podemos ejecutarlo en un pipeline asi:
+//utilidades es el nombre que le hemos dado a la libreria en la configuracion global de jenkins
+@Library('utilidades') import org.euge.Utilities
 def utils = new Utilities(this, "miMaven");
 
 node {

@@ -1,6 +1,6 @@
 /*
-@Library('my-shared-library') 
-evenOrOdd(currentBuild.getNumber())
+@Library('utilidades') 
+parInpar(currentBuild.getNumber())
 */
 
 def call(int buildNumber) {

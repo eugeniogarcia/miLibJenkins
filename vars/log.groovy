@@ -1,7 +1,7 @@
 /* Se puede usar en un pipeline como sigue:
 @Library('utilidades')
-log.info 'Starting';
-log.warning 'Nothing to do!';
+log.info 'Empezando';
+log.warning 'Nada que hacer!';
 */
 
 def info(message) {
